@@ -1,0 +1,29 @@
+<?php /** @var $this \Zencash\Payment\ThankYouPage */ ?>
+<h4 style="color: darkred">We are waiting for your transaction to be confirmed</h4>
+<div class='page-container'>
+    <div class='container-zencash-payment'>
+        <div class='header-zencash-payment'>
+            <span class='zencash-payment-text-header'><h2>ZenCash payment information</h2></span>
+        </div>
+        <div class='content-zencash-payment'>
+            <div class='zencash-amount-send'>
+                <span class='zencash-label'>Send:</span>
+                <div class='zencash-amount-box'><b><?php echo $this->getData('amount') ?></b></div>
+            </div>
+            <div class='zencash-address'>
+                <span class='zencash-label'>To this address:</span>
+                <div class='zencash-address-box'><b><?php echo $this->getData('zencash_address') ?></b></div>
+            </div>
+            <div class='clear'></div>
+        </div>
+        <div class='footer-zencash-payment'>
+            <a href='https://zensystem.io' target='_blank'>ZenCash</a>
+        </div>
+    </div>
+</div>
+
+<script type='text/javascript'>
+    setTimeout(function () {
+        location.reload(true);
+    }, 60000);
+</script>
