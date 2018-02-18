@@ -32,4 +32,9 @@ abstract class Strategy
      * @return bool
      */
     public function isConfirmed($amount){}
+
+    /**
+     * @param $orderId
+     */
+    public function onOrderPlace($orderId){}
 }

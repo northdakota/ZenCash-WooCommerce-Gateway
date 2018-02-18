@@ -17,7 +17,7 @@ class ThankYouPage
     {
         $dir      = plugin_dir_path(__FILE__);
         $order    = wc_get_order($orderId);
-        $zenPrice = $this->getZenPrice($order->get_items());
+        $zenPrice = $this->getZenPrice($order);
 
         self::$settings['rate'] = $zenPrice;
 
@@ -40,15 +40,14 @@ class ThankYouPage
     }
 
     /**
-     * @param array $items
+     * @param \WC_Order
      *
      * @return string
      */
-    protected function getZenPrice(array $items)
+    protected function getZenPrice(\WC_Order $order)
     {
-        /** @var \WC_Order_Item_Product $item */
-        foreach ($items as $item) {
-            return $item->get_meta('zen_exchange_rate');
+        if ($order->get_meta('zen_exchange_rate')) {
+            return $order->get_meta('zen_exchange_rate');
         }
 
         return 1;

@@ -73,7 +73,9 @@ class Zencash extends \WC_Payment_Gateway
         ThankYouPage::$settings = $this->settings;
         add_action('woocommerce_thankyou_' . $this->id, [new ThankYouPage, 'instruction']);
 
-        add_action('woocommerce_add_order_item_meta', [$this, 'addExchangeRate'], 1, 2);
+        add_action('woocommerce_checkout_order_processed', [$this, 'addExchangeRate'], 1, 1);
+        add_action('woocommerce_checkout_order_processed', [$this, 'runStrategyDepencies'], 1, 1);
+
 
         $this->init_settings();
         $this->init_form_fields();
@@ -179,11 +181,11 @@ class Zencash extends \WC_Payment_Gateway
     }
 
     /**
-     * @param $itemId
-     * @param $values
+     * @param $orderId
      */
-    public function addExchangeRate($itemId, $values)
+    public function addExchangeRate($orderId)
     {
+        $order    = wc_get_order($orderId);
         $currency = get_woocommerce_currency();
 
         if ($currency == Helper::ZEN_CURRENCY) {
@@ -193,7 +195,20 @@ class Zencash extends \WC_Payment_Gateway
         if (empty($values['zen_exchange_rate'])) {
             $rateResolver = new RateResolver();
             $rate         = $rateResolver->getRate();
-            wc_add_order_item_meta($itemId, 'zen_exchange_rate', $rate);
+            $order->update_meta_data('zen_exchange_rate', $rate);
+            $order->save_meta_data();
         }
+    }
+
+    /**
+     * @param $orderId
+     */
+    public function runStrategyDepencies($orderId)
+    {
+        $isRpc    = $this->settings['rpc'] == 'yes' ? true : false;
+        $strategy = StrategyResolver::getStrategy($isRpc);
+        $strategy->setSettings($this->settings);
+
+        $strategy->onOrderPlace($orderId);
     }
 }
