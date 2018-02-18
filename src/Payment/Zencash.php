@@ -113,7 +113,7 @@ class Zencash extends \WC_Payment_Gateway
 
             'zencash_address' => [
                 'title'    => __('ZenCash Address', 'wc-zencash-gateway'),
-                'label'    => __('Useful for people that have not a daemon online'),
+                'label'    => __('Useful for people that have not a daemon online (only if rpc turned on)'),
                 'type'     => 'text',
                 'desc_tip' => __('Zencash Wallet Address', 'wc-zencash-gateway'),
             ],
@@ -121,7 +121,7 @@ class Zencash extends \WC_Payment_Gateway
             'rpc' => [
                 'title'   => __('Enable/Disable', 'wc-zencash-gateway'),
                 'type'    => 'checkbox',
-                'label'   => __('Use zen rpc client (Not implemented yet!)', 'wc-zencash-gateway'),
+                'label'   => __('Use zen rpc client', 'wc-zencash-gateway'),
                 'default' => 'no',
             ],
 

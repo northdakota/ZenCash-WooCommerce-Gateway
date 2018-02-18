@@ -39,4 +39,9 @@ class Rpc extends Strategy
 
         $t = 1;
     }
+
+    public function generateAddress()
+    {
+
+    }
 }
