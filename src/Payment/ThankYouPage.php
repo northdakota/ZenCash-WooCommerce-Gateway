@@ -31,7 +31,11 @@ class ThankYouPage
         $strategy = StrategyResolver::getStrategy($isRpc);
         $strategy->setSettings(self::$settings);
 
-        if ($strategy->isConfirmed($amount)) {
+        if ($isRpc) {
+            self::$settings['zencash_address'] = $order->get_meta('zen_order_address');
+        }
+
+        if ($strategy->isConfirmed($amount, $orderId)) {
             $order->update_status('processing', __('Payment has been received', 'is_virtual_in_cart'));
             require_once $dir . 'templates/confirmed.phtml';
         } else {

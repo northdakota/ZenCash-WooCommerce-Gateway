@@ -21,7 +21,7 @@ class Rpc extends Strategy
     {
         $order = wc_get_order($orderId);
 
-        if ($order->get_meta('order_address')) {
+        if ($order->get_meta('zen_order_address')) {
             return;
         }
 
@@ -31,23 +31,32 @@ class Rpc extends Strategy
             throw new \Exception("Internal server error");
         }
 
-        $order->update_meta_data('order_address', $newAddress);
+        $order->update_meta_data('zen_order_address', $newAddress);
         $order->save_meta_data();
     }
 
     /**
      * @param $amount
      *
-     * @return bool|void
+     * @param $orderId
+     *
+     * @return bool
      * @throws \Exception
      */
-    public function isConfirmed($amount)
+    public function isConfirmed($amount, $orderId)
     {
-        $this->getClient()->rpcZcashCommand(
-            $this->getCommand()
+        $order   = wc_get_order($orderId);
+        $address = $order->get_meta('zen_order_address');
+
+        $addressBalance = $this->getClient()->rpcZcashCommand(
+            $this->getCommand('getreceivedbyaddress', [$address])
         );
 
+        if ($addressBalance['result'] >= $amount) {
+            return true;
+        }
 
+        return false;
     }
 
     /**
@@ -57,11 +66,10 @@ class Rpc extends Strategy
     public function generateAddress()
     {
         $result = $this->getClient()->rpcZcashCommand(
-            $this->getCommand('getnewaddress', [''])
+            $this->getCommand('getnewaddress')
         );
 
-        return '';
-
+        return $result['result'];
     }
 
     /**
@@ -91,10 +99,11 @@ class Rpc extends Strategy
             'jsonrpc' => '1.0',
             'id'      => 'curl',
             'method'  => $command,
-            'params'  => [
-                $params,
-            ],
         ];
+
+        if ($params) {
+            $result['params'] = $params;
+        }
 
         return $result;
     }

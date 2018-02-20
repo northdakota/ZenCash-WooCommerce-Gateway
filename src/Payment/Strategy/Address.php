@@ -18,9 +18,11 @@ class Address extends Strategy
     /**
      * @param $amount
      *
+     * @param $orderId
+     *
      * @return bool
      */
-    public function isConfirmed($amount)
+    public function isConfirmed($amount, $orderId)
     {
         $http = new \WP_Http;
 
